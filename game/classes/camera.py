@@ -1,4 +1,3 @@
-from encodings.punycode import T
 import pygame 
 import time
 
@@ -9,6 +8,9 @@ class Camera:
         self.height = height
 
         self.offset = pygame.math.Vector2(0, 0)
+
+        self.bounds = pygame.Surface((0, 0))
+        self.bounds_rect = pygame.Rect(0, 0, 0, 0)
 
         self.zoom = 3
 
@@ -59,7 +61,7 @@ class Camera:
     def update(self, target, screen):
 
         x = (target.rect.centerx - self.width / 2)
-        y = (target.rect.centery/ 2)
+        y = (target.rect.centery - self.height / 2)
 
         self.offset.x = 0
         self.offset.y = 0
@@ -78,14 +80,17 @@ class Camera:
         self.camera.x += self.offset.x
         self.camera.y += self.offset.y
 
-        #print(self.camera.x, self.camera.y)
-        #print(self.offset)
+        #self.camera.clamp_ip(self.bounds_rect)
+        #print('camera ', self.camera, ' bounds ', self.bounds_rect)
 
 
-    def set_bounds(self, level_width, level_height):
-        self.camera.left = max(-(level_width - self.width), min(0, self.camera.left))
-        self.camera.top = max(-(level_height - self.height), min(0, self.camera.top))
 
+    def set_bounds(self, screen, level_width, level_height):
+        self.bounds = pygame.Surface((level_width, level_height))
+        self.bounds_rect = pygame.Rect(0, 0, level_width, level_height)
+        bounds_rect_transformed, bounds_transformed = self.apply(self.bounds_rect, self.bounds)
+        screen.blit(bounds_transformed, bounds_rect_transformed)
+        
 
 
     def render_scene(self, screen, background_color, platforms, items, player, enemy=None, enemy_spawn_xy=None):

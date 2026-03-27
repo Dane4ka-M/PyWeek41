@@ -25,7 +25,7 @@ def load_level(level_number, tile_size, camera, screen):
 
     print('level width ', level_width, '| level height ', level_height)
     
-
+    
     platforms = pygame.sprite.Group()
 
     items = []
