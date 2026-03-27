@@ -68,7 +68,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = pygame.Rect(0, 0, 0, 0)
         print('enemy ', self.type, ' destroyed')
         
-    def create_enemy(self, x, y, state, target, level):
+    def create_enemy(self, x, y, state, target, level=[]):
         self.alive = True
         self.state = state
         self.target = target
@@ -81,7 +81,8 @@ class Enemy(pygame.sprite.Sprite):
         self.x, self.y = x, y
         self.rect.x, self.rect.y = x, y
 
-        self.level = level
+        if len(level):
+            self.level = level
 
         print('enemy ', self.type, ' spawned on ', self.x, self.y)
 
@@ -351,7 +352,7 @@ class Enemy(pygame.sprite.Sprite):
         road_found_x = 0
         road_found_y = 0
 
-        
+        print('check y', check_y)
         for check_x in range(self_location_x, target_location_x, step):
             if level[check_y][check_x] == -1:
                 if level[check_y+1][check_x] in range(16): #way is free with a floor
