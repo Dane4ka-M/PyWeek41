@@ -205,7 +205,7 @@ def load_level(level_number, tile_size, camera, screen):
                     image = pygame.Surface((tile_size*10, tile_size*10))
                     image.fill(placeholder_color)
                 
-                items.append(Item(col * tile_size, row * tile_size - (tile_size*10 - tile_size), tile_size*10, tile_size*10, image, 'FOREST', level_number, markers, can_interact=True, can_pass=False))
+                items.append(Item(col * tile_size, row * tile_size - (tile_size*10 - tile_size) +1, tile_size*10, tile_size*10, image, 'FOREST', level_number, markers, can_interact=True, can_pass=False))
 
             if level[row][col] == 48: #bush interactable red
 
@@ -282,10 +282,10 @@ def load_level(level_number, tile_size, camera, screen):
                 
                 except:
                     print('failed to load textures on tile ', row, col, ' with index ', level[row][col], '. Filling with pink color instead')
-                    image = pygame.Surface((tile_size, tile_size))
+                    image = pygame.Surface((tile_size*2, tile_size*4))
                     image.fill(placeholder_color)
                 
-                items.append(Item(col*tile_size, row*tile_size, tile_size, tile_size, image, 'TREE_BIG_1', level_number, markers, can_interact=False))
+                items.append(Item(col*tile_size, (row-3)*tile_size, tile_size*2, tile_size*4, image, 'TREE_BIG_1', level_number, markers, can_interact=False))
 
             if level[row][col] == 97: #tree big 2
 
@@ -294,10 +294,10 @@ def load_level(level_number, tile_size, camera, screen):
                 
                 except:
                     print('failed to load textures on tile ', row, col, ' with index ', level[row][col], '. Filling with pink color instead')
-                    image = pygame.Surface((tile_size, tile_size))
+                    image = pygame.Surface((tile_size*2, tile_size*4))
                     image.fill(placeholder_color)
                 
-                items.append(Item(col*tile_size, row*tile_size, tile_size, tile_size, image, 'TREE_BIG_2', level_number, markers, can_interact=False))
+                items.append(Item(col*tile_size, (row-3)*tile_size, tile_size*2, tile_size*4, image, 'TREE_BIG_2', level_number, markers, can_interact=False))
 
             if level[row][col] == 98: #tree big 3
 
@@ -306,10 +306,10 @@ def load_level(level_number, tile_size, camera, screen):
                 
                 except:
                     print('failed to load textures on tile ', row, col, ' with index ', level[row][col], '. Filling with pink color instead')
-                    image = pygame.Surface((tile_size, tile_size))
+                    image = pygame.Surface((tile_size*2, tile_size*3))
                     image.fill(placeholder_color)
                 
-                items.append(Item(col*tile_size, row*tile_size, tile_size, tile_size, image, 'TREE_BIG_3', level_number, markers, can_interact=False))
+                items.append(Item(col*tile_size, (row-2)*tile_size, tile_size*2, tile_size*3, image, 'TREE_BIG_3', level_number, markers, can_interact=False))
 
             if level[row][col] == 99: #tree giant
 
@@ -318,10 +318,10 @@ def load_level(level_number, tile_size, camera, screen):
                 
                 except:
                     print('failed to load textures on tile ', row, col, ' with index ', level[row][col], '. Filling with pink color instead')
-                    image = pygame.Surface((tile_size, tile_size))
+                    image = pygame.Surface((tile_size*3, tile_size*6))
                     image.fill(placeholder_color)
                 
-                items.append(Item(col*tile_size, row*tile_size, tile_size, tile_size, image, 'TREE_GIANT', level_number, markers, can_interact=False))
+                items.append(Item(col*tile_size, (row-5)*tile_size, tile_size*3, tile_size*6, image, 'TREE_GIANT', level_number, markers, can_interact=False))
 
             if level[row][col] == 100: #tree medium 1
 
@@ -378,12 +378,36 @@ def load_level(level_number, tile_size, camera, screen):
                 
                 except:
                     print('failed to load textures on tile ', row, col, ' with index ', level[row][col], '. Filling with pink color instead')
-                    image = pygame.Surface((tile_size, tile_size))
+                    image = pygame.Surface((tile_size, tile_size*2))
                     image.fill(placeholder_color)
                 
-                items.append(Item(col*tile_size, row*tile_size, tile_size, tile_size, image, 'BUSH_SMALL', level_number, markers, can_interact=False))
+                items.append(Item(col*tile_size, (row-1)*tile_size, tile_size, tile_size*2, image, 'BUSH_SMALL', level_number, markers, can_interact=False))
 
             if level[row][col] == 105: #bush small blue
+
+                try:
+                    image = pygame.image.load('images/tileset/_' + str(level[row][col]) + '.png')
+                
+                except:
+                    print('failed to load textures on tile ', row, col, ' with index ', 103, '. Filling with pink color instead')
+                    image = pygame.Surface((tile_size, tile_size*2))
+                    image.fill(placeholder_color)
+                
+                items.append(Item(col*tile_size, (row-1)*tile_size, tile_size, tile_size*2, image, 'BUSH_SMALL_BLUE', level_number, markers, can_interact=False))
+
+            if level[row][col] == 51: #house
+
+                try:
+                    image = pygame.image.load('images/tileset/_' + str(level[row][col]) + '.png')
+                
+                except:
+                    print('failed to load textures on tile ', row, col, ' with index ', level[row][col], '. Filling with pink color instead')
+                    image = pygame.Surface((tile_size*5, tile_size*5))
+                    image.fill(placeholder_color)
+                
+                items.append(Item(col*tile_size, ((row-4)*tile_size)+4, tile_size*5, tile_size*5, image, 'HOUSE', level_number, markers, can_interact=False))
+
+            if level[row][col] == 52: #police office
 
                 try:
                     image = pygame.image.load('images/tileset/_' + str(level[row][col]) + '.png')
@@ -393,11 +417,13 @@ def load_level(level_number, tile_size, camera, screen):
                     image = pygame.Surface((tile_size, tile_size))
                     image.fill(placeholder_color)
                 
-                items.append(Item(col*tile_size, row*tile_size, tile_size, tile_size, image, 'BUSH_SMALL_BLUE', level_number, markers, can_interact=False))
+                items.append(Item(col*tile_size, row*tile_size, tile_size, tile_size, image, 'POLICE', level_number, markers, can_interact=False))
+
+            
 
 
 
-    camera.fade_in(screen, (0, 0, 0), set_background(level_number), platforms, items, player)
+    #camera.fade_in(screen, (0, 0, 0), set_background(level_number), platforms, items, player) убрала из-за багов
     return platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level
 
 def set_background(number):

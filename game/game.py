@@ -130,30 +130,31 @@ def main():
                     player.jump_stop()
                 
 
+        if not current_level == 3:
+        
+            keys = pygame.key.get_pressed()
+
+            jump_pressed = keys[pygame.K_SPACE] or keys[pygame.K_UP] or keys[pygame.K_w]
+            player.velocity_x = 0
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                player.velocity_x = -player.speed
+                player.direction = 0
+                #player.animation_player(0, 'run')
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                player.velocity_x = player.speed
+                player.direction = 1
+                #player.animation_player(1, 'run')
+
+            if jump_pressed:
+                player.jump()
+                player_jump_sound.play()
 
         
-        keys = pygame.key.get_pressed()
-
-        jump_pressed = keys[pygame.K_SPACE] or keys[pygame.K_UP] or keys[pygame.K_w]
-        player.velocity_x = 0
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            player.velocity_x = -player.speed
-            player.direction = 0
-            #player.animation_player(0, 'run')
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            player.velocity_x = player.speed
-            player.direction = 1
-            #player.animation_player(1, 'run')
-
-        if jump_pressed:
-            player.jump()
-            player_jump_sound.play()
-
-        
 
         
         
-        jumping = jump_pressed
+            jumping = jump_pressed
+
 
 
         #---ОТРИСОВКА---
@@ -198,6 +199,7 @@ def main():
 
         #---ОБНОВЛЕНИЕ ИГРЫ---
         
+
         for marker in markers:
             marker.update(screen, player, items, current_level)
             if marker.is_triggered:
@@ -373,11 +375,48 @@ def main():
                         item.is_triggered = False
 
 
+
+
+        if current_level == 3: #финальная кацсцена
+
+            for item in items:
+                if item.type == 'POLICE':
+                    camera.target = item
+                    print('camera target set to police')
+
+            enemy.state = 'IDLE'
+            enemy.can_chase = False
+            
+            scene_start = time.time()
+            print('start time ', scene_start)
+
+            if time.time() - scene_start >= 1:
+                print('1 second passed')
+                player.speed = 2
+                player.velocity_x = player.speed
+                player.direction = 1
+                print('player velocity ', player.velocity_x)
+
+            if time.time() - scene_start >= 4:
+                print('4 seconds passed')
+                player.velocity_x = 0
+                print('player velocity ', player.velocity_x)
+
+                #play knocks or something
+
+                
+            
+
+
+
+
         if trigger_next_level:
             current_level += 1
             background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera)
             trigger_next_level = False
         
+
+
 
         player.update(screen, platforms, items, camera, enemy)
         
@@ -390,8 +429,8 @@ def main():
             for mob in mobs:
                 mob.update(platforms, markers, camera, player, screen)
         
-        if trigger_next_level:
-            camera.fade_in(screen, (0, 0, 0), background_color, platforms, items, player)
+        """if trigger_next_level:
+            camera.fade_in(screen, (0, 0, 0), background_color, platforms, items, player) убрала из-за багов"""
 
 
 
