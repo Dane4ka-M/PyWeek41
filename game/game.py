@@ -293,7 +293,6 @@ def main():
                     if item.type == 'LEVER_1':
                         print('triggered lever 1')
                         for target in items:
-                            print(target.type)
                             if target.type == 'BRIDGE_1':
                                 print('found bridge 1')
                                 target.y = target.y + tile_size*5
@@ -301,6 +300,35 @@ def main():
                                 target.height = tile_size
                                 target.image_surface = pygame.Surface((target.width, target.height))
                                 target.image = pygame.image.load('images/tileset/_17.png')
+                                target.rect = pygame.Rect(target.x, target.y, target.width, target.height)
+                                break
+                        item.is_triggered = False
+
+                    if item.type == 'LEVER_2':
+                        print('triggered lever 2')
+                        for target in items:
+                            if target.type == 'BRIDGE_2':
+                                print('found bridge 2')
+                                target.y = target.y + tile_size*5
+                                target.width = tile_size*6
+                                target.height = tile_size
+                                target.image_surface = pygame.Surface((target.width, target.height))
+                                target.image = pygame.image.load('images/tileset/_19.png')
+                                target.rect = pygame.Rect(target.x, target.y, target.width, target.height)
+                                break
+                        item.is_triggered = False
+
+                    if item.type == 'LEVER_3':
+                        print('triggered lever 3')
+                        for target in items:
+                            print(target.type)
+                            if target.type == 'BRIDGE_3':
+                                print('found bridge 3')
+                                target.y = target.y - tile_size*5
+                                target.width = tile_size
+                                target.height = tile_size*6
+                                target.image_surface = pygame.Surface((target.width, target.height))
+                                target.image = pygame.image.load('images/tileset/_20.png')
                                 target.rect = pygame.Rect(target.x, target.y, target.width, target.height)
                                 break
                         item.is_triggered = False
