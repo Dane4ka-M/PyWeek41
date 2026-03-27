@@ -210,11 +210,14 @@ def main():
                             enemy.can_chase = True
 
                         for item in items:
-                            if item.type == 'FOREST':
-                                item.image_surface.set_alpha(255)
-                                item.can_pass = True
-                                item.can_interact = False
-                                item.alive = False
+                            if current_level == 1:
+                                if item.type == 'FOREST':
+                                    item.image_surface.set_alpha(255)
+                                    item.can_pass = True
+                                    item.can_interact = False
+                                    item.alive = False
+
+                            
 
                     
                                 
@@ -284,7 +287,24 @@ def main():
                     trigger_next_level = level_update(0, camera, screen, markers, items)
                     item.is_triggered = False
                     #print('trigger level')
-                    
+
+                if current_level == 2:
+                                
+                    if item.type == 'LEVER_1':
+                        print('triggered lever 1')
+                        for target in items:
+                            print(target.type)
+                            if target.type == 'BRIDGE_1':
+                                print('found bridge 1')
+                                target.y = target.y + tile_size*5
+                                target.width = tile_size*6
+                                target.height = tile_size
+                                target.image_surface = pygame.Surface((target.width, target.height))
+                                target.image = pygame.image.load('images/tileset/_17.png')
+                                target.rect = pygame.Rect(target.x, target.y, target.width, target.height)
+                                break
+                        item.is_triggered = False
+
 
         if trigger_next_level:
             current_level += 1

@@ -160,31 +160,31 @@ def load_level(level_number, tile_size, camera, screen):
                     image = pygame.image.load('images/tileset/_' + str(level[row][col]) + '.png')
                 except:
                     print('failed to load textures on tile ', row, col, ' with index ', level[row][col], '. Filling with pink color instead')
-                    image = pygame.Surface((tile_size*10, tile_size*10))
+                    image = pygame.Surface((tile_size, tile_size*6))
                     image.fill(placeholder_color)
                 
-                items.append(Item(col * tile_size, row * tile_size - (tile_size*10 - tile_size), tile_size*10, tile_size*10, image, 'BRIDGE_1', level_number, markers, can_interact=False, can_pass=False))
+                items.append(Item(col * tile_size, row * tile_size - (tile_size*6 - tile_size), tile_size*1, tile_size*6, image, 'BRIDGE_1', level_number, markers, can_interact=False, can_pass=False))
             if level[row][col] == 18: #bridge 2
 
                 try:
                     image = pygame.image.load('images/tileset/_' + str(level[row][col]) + '.png')
                 except:
                     print('failed to load textures on tile ', row, col, ' with index ', level[row][col], '. Filling with pink color instead')
-                    image = pygame.Surface((tile_size*10, tile_size*10))
+                    image = pygame.Surface((tile_size, tile_size*6))
                     image.fill(placeholder_color)
                 
-                items.append(Item(col * tile_size, row * tile_size - (tile_size*10 - tile_size), tile_size*10, tile_size*10, image, 'BRIDGE_2', level_number, markers, can_interact=False, can_pass=False))
+                items.append(Item(col * tile_size, row * tile_size - (tile_size*6 - tile_size), tile_size, tile_size*6, image, 'BRIDGE_2', level_number, markers, can_interact=False, can_pass=False))
             if level[row][col] == 20: #bridge 3
 
                 try:
                     image = pygame.image.load('images/tileset/_' + str(level[row][col]) + '.png')
                 except:
                     print('failed to load textures on tile ', row, col, ' with index ', level[row][col], '. Filling with pink color instead')
-                    image = pygame.Surface((tile_size*10, tile_size*10))
+                    image = pygame.Surface((tile_size, tile_size*6))
                     image.fill(placeholder_color)
                 
-                items.append(Item(col * tile_size, row * tile_size - (tile_size*10 - tile_size), tile_size*10, tile_size*10, image, 'BRIDGE_3', level_number, markers, can_interact=False, can_pass=False))
-            if level[row][col] == 22: #bridge 4
+                items.append(Item(col * tile_size, row * tile_size - (tile_size*6 - tile_size), tile_size, tile_size*6, image, 'BRIDGE_3', level_number, markers, can_interact=False, can_pass=False))
+            if level[row][col] == 22: #block
 
                 try:
                     image = pygame.image.load('images/tileset/_' + str(level[row][col]) + '.png')
@@ -193,7 +193,7 @@ def load_level(level_number, tile_size, camera, screen):
                     image = pygame.Surface((tile_size*10, tile_size*10))
                     image.fill(placeholder_color)
                 
-                items.append(Item(col * tile_size, row * tile_size - (tile_size*10 - tile_size), tile_size*10, tile_size*10, image, 'BRIDGE_4', level_number, markers, can_interact=False, can_pass=False))
+                items.append(Item(col * tile_size, row * tile_size - (tile_size*10 - tile_size), tile_size*10, tile_size*10, image, 'BLOCK', level_number, markers, can_interact=False, can_pass=False))
 
 
             if level[row][col] == 23: #forest

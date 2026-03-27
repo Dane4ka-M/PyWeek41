@@ -189,8 +189,9 @@ class Enemy(pygame.sprite.Sprite):
                 self.frame = 0
                 self.wait_play = 0
 
-        if self.type == 'THORNS':
-            print('AAAAAAAAAAAAAAAAAAAAAAAAAAA')
+        """if self.type == 'THORNS':
+            print('AAAAAAAAAAAAAAAAAAAAAAAAAAA')"""
+        
         #смена кадров текущей анимации
         self.image = pygame.image.load(self.animation[self.frame])
         #print('current frame', self.frame)
@@ -262,10 +263,10 @@ class Enemy(pygame.sprite.Sprite):
                         if self.detect_timer == None:
                             self.detect_timer = time.time()
 
-                        print('the enemy is processing...')
+                        #print('the enemy is processing...')
                         time_passed = time.time() - self.detect_timer
                         if time_passed >= self.detect_delay:
-                            print('start chasing')
+                            #print('start chasing')
                             self.state = 'CHASE'
 
             if self.state == 'SEARCH':
@@ -295,7 +296,7 @@ class Enemy(pygame.sprite.Sprite):
 
                     self_location_x = int(self.rect.x / 16)
                     self_location_y = int(self.rect.y / 16)
-                    print('self loc y', self_location_y)
+                    #print('self loc y', self_location_y)
 
                     can_pass = self.check_platforms(self_location_x, self_location_y, target_location_x, target_location_y, markers)
 
@@ -357,12 +358,14 @@ class Enemy(pygame.sprite.Sprite):
                     road_found_x += 1
                 else: #way is free but no floor, starting to search for the floor
                     check_y += 1
-                    print('search for the floor on ', check_y)
+                    #print('search for the floor on ', check_y)
                     while level[check_y][check_x] not in range(16):
-                        print('on ', check_y)
+                        #print('on ', check_y)
                         check_y += 1
-                        if check_y >= 50:
-                            print('floor not found, cannot chase')
+                        if check_y >= 10:
+                            ('floor not found, cannot chase')
+                            check_y = self_location_y
+                            break
                 self.move_x(step)
             else: #block ahead
                 if level[check_y-2][check_x] == -1: #the second tile from above is free
