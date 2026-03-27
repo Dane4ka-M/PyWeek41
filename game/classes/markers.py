@@ -17,6 +17,7 @@ class Marker(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
+        self.image_surface.set_alpha(255)
 
         self.type = type
 

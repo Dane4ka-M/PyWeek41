@@ -354,31 +354,35 @@ class Enemy(pygame.sprite.Sprite):
 
         #print('check y', check_y)
         for check_x in range(self_location_x, target_location_x, step):
-            if level[check_y][check_x] == -1:
-                if level[check_y+1][check_x] in range(16): #way is free with a floor
-                    road_found_x += 1
-                else: #way is free but no floor, starting to search for the floor
-                    check_y += 1
-                    #print('search for the floor on ', check_y)
-                    while level[check_y][check_x] not in range(16):
-                        #print('on ', check_y)
+            try:
+                if level[check_y][check_x] == -1:
+                    if level[check_y+1][check_x] in range(16): #way is free with a floor
+                        road_found_x += 1
+                    else: #way is free but no floor, starting to search for the floor
                         check_y += 1
-                        if check_y >= 10:
-                            #print('floor not found, cannot chase')
-                            check_y = self_location_y
-                            break
-                self.move_x(step)
-            else: #block ahead
-                if level[check_y-2][check_x] == -1: #the second tile from above is free
-                    check_y -= 2
-                    self.jump()
+                        #print('search for the floor on ', check_y)
+                        while level[check_y][check_x] not in range(16):
+                            #print('on ', check_y)
+                            check_y += 1
+                            if check_y >= 10:
+                                #print('floor not found, cannot chase')
+                                check_y = self_location_y
+                                break
                     self.move_x(step)
-                else:
-                    self.cannot_reach_count += 1
-                    #print('cannot reach ', self.cannot_reach_count)
-                    #set target (create some sort of target in the oposite direction)
-                    if self.cannot_reach_count == 1000:
-                        return False
+                else: #block ahead
+                    if level[check_y-2][check_x] == -1: #the second tile from above is free
+                        check_y -= 2
+                        self.jump()
+                        self.move_x(step)
+                    else:
+                        self.cannot_reach_count += 1
+                        #print('cannot reach ', self.cannot_reach_count)
+                        #set target (create some sort of target in the oposite direction)
+                        if self.cannot_reach_count == 1000:
+                            return False
+            except:
+                enemy.destroy_enemy()
+                enemy.create_enemy(self.rect.x-16, self.rect.y-16)
 
 
     def start_chase(self):
