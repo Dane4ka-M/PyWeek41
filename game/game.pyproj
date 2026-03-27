@@ -127,7 +127,6 @@
     <Content Include="images\tileset\__81.png" />
     <Content Include="images\tileset\__82.png" />
     <Content Include="images\tileset\__9.png" />
-    <Content Include="images\здесь сохранять спрайты" />
     <Content Include="levels\0.csv" />
     <Content Include="sounds\здесь сохранять звуковые эффекты и саундтрек" />
   </ItemGroup>
