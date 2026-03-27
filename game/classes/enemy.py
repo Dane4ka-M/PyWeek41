@@ -352,7 +352,7 @@ class Enemy(pygame.sprite.Sprite):
         road_found_x = 0
         road_found_y = 0
 
-        print('check y', check_y)
+        #print('check y', check_y)
         for check_x in range(self_location_x, target_location_x, step):
             if level[check_y][check_x] == -1:
                 if level[check_y+1][check_x] in range(16): #way is free with a floor
@@ -364,7 +364,7 @@ class Enemy(pygame.sprite.Sprite):
                         #print('on ', check_y)
                         check_y += 1
                         if check_y >= 10:
-                            ('floor not found, cannot chase')
+                            #print('floor not found, cannot chase')
                             check_y = self_location_y
                             break
                 self.move_x(step)

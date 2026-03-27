@@ -39,7 +39,6 @@ def change_level(number, screen, camera):
     
     platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = load_level(number, tile_size, camera, screen) 
     
-    camera.set_bounds(level_width, level_height)
 
     if enemy:
         enemy.create_enemy(enemy_spawn_xy[0], enemy_spawn_xy[1], 'IDLE', player, level) #заспавнить врага
@@ -55,6 +54,8 @@ def change_level(number, screen, camera):
                 mobs[i].create_enemy(mobs_spawn_xy[i][0], mobs_spawn_xy[i][1], 'IDLE', player, level) 
 
     screen.fill(background_color)
+
+    camera.set_bounds(screen, level_width, level_height)
 
     
 
@@ -202,10 +203,10 @@ def main():
                         if enemy.detect_timer == None:
                             enemy.detect_timer = time.time()
 
-                        print('MARKER: the enemy is processing...')
+                        #print('MARKER: the enemy is processing...')
                         time_passed = time.time() - enemy.detect_timer
                         if time_passed >= enemy.detect_delay:
-                            print('MARKER: start chasing')
+                            #print('MARKER: start chasing')
                             enemy.state = 'CHASE'
                             enemy.can_chase = True
 
@@ -231,7 +232,7 @@ def main():
                         print('the enemy is processing...')
                         time_passed = time.time() - enemy.detect_timer
                         if time_passed >= 3:
-                            print('start chasing')
+                            #print('start chasing')
                             enemy.state = 'CHASE'
                             enemy.can_chase = True
                             
@@ -270,7 +271,7 @@ def main():
                                     break
                             
                 if marker.type == 'TRIGGER_3': #затухание музыки, потому что погоня прекратилась (вампир задеспавнен)
-                    print('marker 3 triggered')
+                    #print('marker 3 triggered')
                     if current_level == 2:
                         enemy.destroy_enemy()
                         enemy.state = 'IDLE'
@@ -283,7 +284,7 @@ def main():
 
                     if current_level == 2: #деспавнит первых трёх волков для экономии ресурсов, спавнит ещё пять на дне ямы 
                         marker.alive = False
-                        print('trigger 4, level 2')
+                        #print('trigger 4, level 2')
                         enemy.destroy_enemy()
                         enemy.create_enemy(tile_size*217, tile_size*26, 'IDLE', player)
                         enemy.can_chase = False
@@ -298,7 +299,7 @@ def main():
                         print('MARKER: the enemy is processing...')
                         time_passed = time.time() - enemy.detect_timer
                         if time_passed >= 2:
-                            print('MARKER: start chasing')
+                            #print('MARKER: start chasing')
                             enemy.state = 'CHASE'
                             enemy.can_chase = True
 
@@ -319,10 +320,10 @@ def main():
                 if current_level == 2:
                                 
                     if item.type == 'LEVER_1':
-                        print('triggered lever 1')
+                        #print('triggered lever 1')
                         for target in items:
                             if target.type == 'BRIDGE_1':
-                                print('found bridge 1')
+                                #print('found bridge 1')
                                 target.y = target.y + tile_size*5
                                 target.width = tile_size*6
                                 target.height = tile_size
@@ -333,10 +334,10 @@ def main():
                         item.is_triggered = False
 
                     if item.type == 'LEVER_2':
-                        print('triggered lever 2')
+                        #print('triggered lever 2')
                         for target in items:
                             if target.type == 'BRIDGE_2':
-                                print('found bridge 2')
+                                #print('found bridge 2')
                                 target.y = target.y + tile_size*5
                                 target.width = tile_size*6
                                 target.height = tile_size
@@ -347,11 +348,11 @@ def main():
                         item.is_triggered = False
 
                     if item.type == 'LEVER_3':
-                        print('triggered lever 3')
+                        #print('triggered lever 3')
                         for target in items:
                             print(target.type)
                             if target.type == 'BRIDGE_3':
-                                print('found bridge 3')
+                                #print('found bridge 3')
                                 target.y = target.y - tile_size*5
                                 target.width = tile_size
                                 target.height = tile_size*6
