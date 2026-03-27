@@ -46,7 +46,7 @@ class Item(pygame.sprite.Sprite):
                         self.alive = False"""
 
 
-
+        
 
 
         #обработка столкновений
@@ -92,6 +92,17 @@ class Item(pygame.sprite.Sprite):
                             self.can_interact = False
                             """
                             СЮДА ВСТАВИТЬ ЗВУК СБОРА ЯГОД
+                            """
+                
+                #рычаги
+                if self.type == 'LEVER_1': 
+                    for event in pygame.event.get():
+                        if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                            self.is_triggered = True
+                            self.image = pygame.image.load('images/tileset/_65.png')
+                            self.can_interact = False
+                            """
+                            СЮДА ВСТАВИТЬ ЗВУК КАКОЙ_НИБУДЬ НА РЫЧАГ
                             """
 
                 
