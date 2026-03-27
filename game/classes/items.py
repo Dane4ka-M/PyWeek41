@@ -125,3 +125,13 @@ class Item(pygame.sprite.Sprite):
                             """
                             СЮДА ВСТАВИТЬ ЗВУК КАКОЙ_НИБУДЬ НА РЫЧАГ
                             """
+
+        if self.type == 'LEVER_3':
+            if self.is_triggered:
+                    for event in pygame.event.get():
+                        if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                            self.image = pygame.image.load('images/tileset/_68.png')
+                            self.can_interact = False
+                            """
+                            СЮДА ВСТАВИТЬ ЗВУК КАКОЙ_НИБУДЬ НА РЫЧАГ
+                            """

@@ -240,7 +240,7 @@ def main():
                                 i = 0
                                 for mob in mobs:
                                     if mob.type == 'WOLF':
-                                        mob.create_enemy(mobs_spawn_xy[i][0], mobs_spawn_xy[i][1], 'IDLE', player, current_level)
+                                        mob.create_enemy(mobs_spawn_xy[i][0], mobs_spawn_xy[i][1], 'IDLE', player)
                                         i += 1
                                     if i == 3:
                                         marker.is_triggered = False
@@ -262,14 +262,14 @@ def main():
 
                         for mob in mobs:
                             if mob.type == 'WOLF':
-                                mob.create_enemy(mobs_spawn_xy[i][0], mobs_spawn_xy[i][1], 'IDLE', player, current_level)
+                                mob.create_enemy(mobs_spawn_xy[i][0], mobs_spawn_xy[i][1], 'IDLE', player)
                                 i += 1
 
                                 if i == 8:
                                     marker.is_triggered = False
                                     break
                             
-                if marker.type == 'MARKER_3': #затухание музыки, потому что погоня прекратилась (вампир задеспавнен)
+                if marker.type == 'TRIGGER_3': #затухание музыки, потому что погоня прекратилась (вампир задеспавнен)
                     print('marker 3 triggered')
                     if current_level == 2:
                         enemy.destroy_enemy()
@@ -278,6 +278,34 @@ def main():
                         marker.alive = False
                         marker.is_triggered = False
                         break
+
+                if marker.type == 'TRIGGER_4':
+
+                    if current_level == 2: #деспавнит первых трёх волков для экономии ресурсов, спавнит ещё пять на дне ямы 
+                        marker.alive = False
+                        print('trigger 4, level 2')
+                        enemy.destroy_enemy()
+                        enemy.create_enemy(tile_size*217, tile_size*26, 'IDLE', player)
+                        enemy.can_chase = False
+
+                        if enemy.detect_timer == None:
+                            enemy.detect_timer = time.time()
+                        
+                        for item in items:
+                            if item.type == 'LEVER_3':
+                                item.is_triggered = True
+
+                        print('MARKER: the enemy is processing...')
+                        time_passed = time.time() - enemy.detect_timer
+                        if time_passed >= 2:
+                            print('MARKER: start chasing')
+                            enemy.state = 'CHASE'
+                            enemy.can_chase = True
+
+                        marker.is_triggered = False
+
+                        
+
 
         for item in items:
             item.update(screen, camera, player, items)
