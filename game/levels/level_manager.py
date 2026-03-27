@@ -13,7 +13,7 @@ placeholder_color = pygame.color.Color(255, 0, 255)
 berries_count = 0
 trigger_next_level = False
 
-def load_level(level_number, tile_size, camera, screen):
+def load_level(level_number, tile_size, camera, screen, audio):
     print('got level number ', level_number)
     
     path = ''.join(('levels/', str(level_number), '.csv'))
@@ -420,7 +420,17 @@ def load_level(level_number, tile_size, camera, screen):
                 items.append(Item(col*tile_size, row*tile_size, tile_size, tile_size, image, 'POLICE', level_number, markers, can_interact=False))
 
             
+    if level_number == 0:
+        audio.stop_music()
+        audio.play_music('thinking')
 
+    if level_number == 1:
+        audio.stop_music()
+        audio.play_music('what')
+
+    if level_number == 2:
+        audio.stop_music()
+        audio.play_music('run')
 
 
     #camera.fade_in(screen, (0, 0, 0), set_background(level_number), platforms, items, player) убрала из-за багов
@@ -433,7 +443,7 @@ def set_background(number):
 
     if number == 0:
         color = pygame.color.Color(50, 200, 200)
-    elif number == 1:
+    elif number == 1 or number == 3:
         color = pygame.color.Color(163, 70, 56)
     else:
         color = pygame.color.Color(20, 0, 100)

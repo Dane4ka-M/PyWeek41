@@ -2,6 +2,7 @@ import pygame
 
 from windows.quit_window import game_quit
 from animation_manager import set_animation
+from classes.audio import Audio
 
 
 class Player(pygame.sprite.Sprite):
@@ -44,9 +45,12 @@ class Player(pygame.sprite.Sprite):
         self.play_speed = 5 #каждые n кадров меняется фрейм анимации
         self.wait_play = 0
 
+        self.sound_playing = False
+        self.was_on_ground = False
+
         self.direction = 1
 
-    def update(self,screen, platforms, items, camera, enemy):
+    def update(self,screen, platforms, items, camera, enemy, audio):
 
         #проверка состояний для смены анимации
         
@@ -61,7 +65,11 @@ class Player(pygame.sprite.Sprite):
                     self.animation = set_animation('player_left_' + self.anim)
 
 
-        
+                if not self.sound_playing:
+                    audio.play_player('player_walk')
+                    self.sound_playing = True
+
+            
             elif self.velocity_x == 0: #покой
                 if self.direction == 1:
                     self.anim = 'idle'
@@ -73,6 +81,9 @@ class Player(pygame.sprite.Sprite):
                 self.frame = 0
                 self.wait_play = 0
 
+                audio.stop_player()
+                self.sound_playing = False
+
         elif not self.on_ground: #прыжок/падение
             if self.direction == 1:
                 self.anim = 'jump'
@@ -81,8 +92,12 @@ class Player(pygame.sprite.Sprite):
                 self.anim = 'jump'
                 self.animation = set_animation('player_left_jump')
 
+
             self.frame = 0
             self.wait_play = 0
+
+            audio.stop_player()
+            self.sound_playing = False
 
 
         #смена кадров текущей анимации
@@ -146,10 +161,14 @@ class Player(pygame.sprite.Sprite):
         #обновление положения по вертикали
         self.rect.y += self.velocity_y
         #old_on_ground = self.on_ground
-        #self.on_ground = False
         
         self.on_ground = False
         
+        was_on_ground = self.on_ground
+
+        if not was_on_ground and self.on_ground and self.velocity_y >= 0:
+            audio.play_player('player_land')
+
         for platform in platforms:
             if self.rect.colliderect(platform.rect):
                 #print('collided with a platform')
@@ -160,6 +179,9 @@ class Player(pygame.sprite.Sprite):
                     self.jumping = False
                     self.jumps_remaining = 2
                     self.jump_count = 0
+
+                    if not self.was_on_ground and self.velocity_y >= 0:
+                        audio.play_player('player_land')
                 
                 elif self.velocity_y < 0:
                     self.rect.top = platform.rect.bottom
@@ -181,6 +203,7 @@ class Player(pygame.sprite.Sprite):
                     self.velocity_y = 0
                     self.on_ground = False
 
+
         if enemy:
             if self.rect.colliderect(enemy.rect):
                 if self.alive:
@@ -194,52 +217,26 @@ class Player(pygame.sprite.Sprite):
                     """
             
 
-    def jump(self):
+    def jump(self, audio=None): 
         if self.jumps_remaining == 2 and self.on_ground:
-                
             self.velocity_y = self.jump_power
-            
             self.jumps_remaining -= 1
-
             self.jumping = True
             self.on_ground = False
-
+            if audio:
+                audio.play_player('player_jump')
             return True
-        elif self.jumps_remaining == 1 and not self.jumping and not self.on_ground: #если не осталось джамп каунт, то не прыгает повторно ИСПРАВИТЬ
-            
+        elif self.jumps_remaining == 1 and not self.jumping and not self.on_ground:
             self.velocity_y = self.jump_power
-
             self.jumps_remaining -= 1
-
             self.jumping = True
+            if audio:
+                audio.play_player('player_jump')
             return True
-            
         return False
-    
-    
-    """
-    СЮДА ДОБАВИТЬ ЗВУКИ ПРЫЖКОВ
-    """
-
 
     def jump_stop(self): #для контролируемой силы прыжка
         if self.jumping:
             self.jumping = False
 
 
-
-
-    """def animation_player(self, direction=1, anim='idle'):
-
-        if direction == self.direction:
-            if anim == self.anim:
-                return
-        else:
-            if direction == 1:
-                self.animation = set_animation('player_right_' + anim)
-
-            elif direction == 0:
-                self.animation = set_animation('player_left_' + anim)
-
-        
-        self.direction = direction"""

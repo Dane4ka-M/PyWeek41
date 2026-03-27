@@ -16,6 +16,8 @@ from classes.player import Player
 from classes.camera import Camera
 from classes.enemy import Enemy
 from classes.markers import Marker
+from classes.audio import Audio
+
 
 running = False
 
@@ -32,11 +34,17 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 
 # библиотека звуков 
 
-player_walk_sound = pygame.mixer.Sound('sounds/GGshag.ogg')
-player_jump_sound = pygame.mixer.Sound('sounds/GGJump.wav')
+audio = Audio()
 
+audio.load_audio('player_walk', 'sounds/GGshag.wav')
+audio.load_audio('player_jump', 'sounds/GGUp.wav')
+audio.load_audio('player_land', 'sounds/GGJump.wav')
+audio.load_audio('menu', 'sounds/BG_Melody_SlowDynamic.wav')
+audio.load_audio('thinking', 'sounds/BG_Melody_ThinkingDynamic.wav')
+audio.load_audio('what', 'sounds/BG_Melody_WhatDynamic.wav')
+audio.load_audio('run', 'sounds/BG_Melody_MoreDynamic.wav')
 
-def change_level(number, screen, camera):
+def change_level(number, screen, camera, audio):
 
     """
     СЮДА МОЖНО ВОТКНУТЬ ЗВУК ПЕРЕХОДА НА ДРУГОЙ УРОВЕНЬ
@@ -46,7 +54,7 @@ def change_level(number, screen, camera):
 
     background_color = set_background(number) #пока цвет, потом заменить на картинку
     
-    platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = load_level(number, tile_size, camera, screen) 
+    platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = load_level(number, tile_size, camera, screen, audio) 
     
 
     if enemy:
@@ -99,7 +107,7 @@ def main():
     #camera.set_bounds(level_width, level_height)
     #enemy.create_enemy(enemy_spawn_xy[0], enemy_spawn_xy[1], 'CHASE', player, level) #заспавнить врага и назначить следить за игроком
 
-    background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera)
+    background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio)
 
     running = True
 
@@ -122,7 +130,7 @@ def main():
 
                 if event.key == pygame.K_TAB:
                     current_level +=1
-                    background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera) #ОТЛАДКА, потом удалить
+                    background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio) #ОТЛАДКА, потом удалить
                     
 
             if event.type == pygame.KEYUP:
@@ -146,12 +154,8 @@ def main():
                 #player.animation_player(1, 'run')
 
             if jump_pressed:
-                player.jump()
-                player_jump_sound.play()
+                player.jump(audio)
 
-        
-
-        
         
             jumping = jump_pressed
 
@@ -191,10 +195,11 @@ def main():
 
         
         if not player.alive:
+            audio.stop_music()
             should_reset = dead_window.game_over(screen, screen_width, screen_height) #enter не всегда срабатывает с первого раза
 
             if should_reset:
-                background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera)
+                background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio)
 
 
         #---ОБНОВЛЕНИЕ ИГРЫ---
@@ -211,7 +216,9 @@ def main():
 
                     if current_level == 1:
                         marker.alive = False
-                            
+                        
+                        audio.stop_music()
+
                         if enemy.detect_timer == None:
                             enemy.detect_timer = time.time()
 
@@ -221,6 +228,9 @@ def main():
                             #print('MARKER: start chasing')
                             enemy.state = 'CHASE'
                             enemy.can_chase = True
+
+                            audio.play_music('run')
+                            marker.is_triggered = False
 
                         for item in items:
                             if current_level == 1:
@@ -285,19 +295,34 @@ def main():
                 if marker.type == 'TRIGGER_3': #затухание музыки, потому что погоня прекратилась (вампир задеспавнен)
                     #print('marker 3 triggered')
                     if current_level == 2:
-                        enemy.destroy_enemy()
-                        enemy.state = 'IDLE'
-                        enemy.can_chase = False
-                        marker.alive = False
-                        marker.is_triggered = False
+                        audio.stop_music()
+
+                        music_wait = time.time()
+
+                        if music_wait - time.time() >= 3:
+                            audio.play_music('thinking')
+
+                            enemy.destroy_enemy()
+                            enemy.state = 'IDLE'
+                            enemy.can_chase = False
+                            
+
+                            marker.alive = False
+                            marker.is_triggered = False
+
+                        
+
+
                         break
 
                 if marker.type == 'TRIGGER_4':
 
-                    if current_level == 2: #деспавнит первых трёх волков для экономии ресурсов, спавнит ещё пять на дне ямы 
+                    if current_level == 2:  
                         marker.alive = False
                         #print('trigger 4, level 2')
-                        enemy.destroy_enemy()
+
+                        audio.stop_music()
+
                         enemy.create_enemy(tile_size*217, tile_size*26, 'IDLE', player)
                         enemy.can_chase = False
 
@@ -308,12 +333,14 @@ def main():
                             if item.type == 'LEVER_3':
                                 item.is_triggered = True
 
-                        print('MARKER: the enemy is processing...')
+                        #print('MARKER: the enemy is processing...')
                         time_passed = time.time() - enemy.detect_timer
                         if time_passed >= 2:
                             #print('MARKER: start chasing')
                             enemy.state = 'CHASE'
                             enemy.can_chase = True
+
+                            audio.play_music('run')
 
                         marker.is_triggered = False
 
@@ -412,13 +439,14 @@ def main():
 
         if trigger_next_level:
             current_level += 1
-            background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera)
+            audio.stop_music()
+            background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio)
             trigger_next_level = False
         
 
 
 
-        player.update(screen, platforms, items, camera, enemy)
+        player.update(screen, platforms, items, camera, enemy, audio)
         
         camera.update(player, screen)
 
@@ -435,14 +463,7 @@ def main():
 
 
         # ЗВУКИ
-
-        if player.anim == 'run':
-            player_walk_sound.play()
-        else:
-            player_walk_sound.stop()
-
         
-
 
 
 
@@ -452,11 +473,12 @@ def main():
 
 
 while True:
-    game_start = menu_window.show(screen, screen_width, screen_height)
+    game_start = menu_window.show(screen, screen_width, screen_height, audio)
     if game_start == True:
         game_start = False
         running = True
+        audio.stop_music()
         main()
 
     if __name__ == '__main__':
-        menu_window.show(screen, screen_width, screen_height)
+        menu_window.show(screen, screen_width, screen_height, audio)

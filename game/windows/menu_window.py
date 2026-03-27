@@ -1,9 +1,11 @@
 import pygame
 from windows.quit_window import finish_process
 
-def show(screen, screen_width, screen_height):
+def show(screen, screen_width, screen_height, audio):
     print('show menu')
     
+    audio.play_music('menu')
+
     background_color = pygame.color.Color((101, 0, 11))
     window_color = pygame.color.Color((66, 0, 8))
     header_color = pygame.color.Color((168, 42, 127))
