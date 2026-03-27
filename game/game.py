@@ -5,6 +5,8 @@ import time
 
 pygame.init()
 
+pygame.mixer.init()
+
 from windows import dead_window
 from windows import menu_window
 from windows.quit_window import game_quit
@@ -26,6 +28,13 @@ trigger_next_level = False
 screen_width, screen_height = 1024, 576
 #screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
 screen = pygame.display.set_mode((screen_width, screen_height))
+
+
+# библиотека звуков 
+
+player_walk_sound = pygame.mixer.Sound('sounds/GGshag.ogg')
+player_jump_sound = pygame.mixer.Sound('sounds/GGJump.wav')
+
 
 def change_level(number, screen, camera):
 
@@ -138,6 +147,7 @@ def main():
 
         if jump_pressed:
             player.jump()
+            player_jump_sound.play()
 
         
 
@@ -382,6 +392,22 @@ def main():
         
         if trigger_next_level:
             camera.fade_in(screen, (0, 0, 0), background_color, platforms, items, player)
+
+
+
+        # ЗВУКИ
+
+        if player.anim == 'run':
+            player_walk_sound.play()
+        else:
+            player_walk_sound.stop()
+
+        
+
+
+
+
+
 
         pygame.display.flip()
 
