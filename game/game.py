@@ -36,13 +36,27 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 
 audio = Audio()
 
-audio.load_audio('player_walk', 'sounds/GGshag.wav')
-audio.load_audio('player_jump', 'sounds/GGUp.wav')
-audio.load_audio('player_land', 'sounds/GGJump.wav')
-audio.load_audio('menu', 'sounds/BG_Melody_SlowDynamic.wav')
-audio.load_audio('thinking', 'sounds/BG_Melody_ThinkingDynamic.wav')
-audio.load_audio('what', 'sounds/BG_Melody_WhatDynamic.wav')
-audio.load_audio('run', 'sounds/BG_Melody_MoreDynamic.wav')
+audio.load_audio('button_click', 'sounds/buttonclick.wav') #Нажатие кнопки
+audio.load_audio('change_level', 'sounds/ChangeLevel.wav') #Изменение уровня+
+
+audio.load_audio('player_walk', 'sounds/GGshag.wav') #Игрок идёт+
+audio.load_audio('player_jump', 'sounds/GGUp.wav') #Игрок прыгает+
+audio.load_audio('player_land', 'sounds/GGJump.wav') #Игрок приземляется
+audio.load_audio('player_collect', 'sounds/CollectBerry.wav') #Игрок собирает ягоды+
+audio.load_audio('player_turnoff', 'sounds/GGTurnOff.wav') #Игрок теряет сознание
+audio.load_audio('player_dead', 'sounds/SoundDead.wav') #Игрок умирает +- (не слышно)
+
+audio.load_audio('vamp_walk', 'sounds/VampShag.wav') #Вампир идёт+
+audio.load_audio('vamp_jump', 'sounds/VampUp.wav') #Вампир прыгает+
+audio.load_audio('vamp_land', 'sounds/VampJump.wav') #Вампир приземляется
+audio.load_audio('vamp_trig', 'sounds/VampTrig.wav') #Вампир заметил игрока+
+
+audio.load_audio('bat_fly', 'sounds/Bat.wav') #Летучая мышь летит
+
+audio.load_audio('menu', 'sounds/BG_Melody_SlowDynamic.wav') #Музыка меню +
+audio.load_audio('thinking', 'sounds/BG_Melody_ThinkingDynamic.wav') #Музыка на начале и рычагах +- (на рычагах почему-то не работает)
+audio.load_audio('what', 'sounds/BG_Melody_WhatDynamic.wav') #Музыка 1 уровень до встречи с вампиром+
+audio.load_audio('run', 'sounds/BG_Melody_MoreDynamic.wav') #Музыка побега+
 
 def change_level(number, screen, camera, audio):
 
@@ -74,7 +88,9 @@ def change_level(number, screen, camera, audio):
 
     camera.set_bounds(screen, level_width, level_height)
 
-    
+    player.set_jump_length(current_level)
+
+
 
     return background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level
 
@@ -132,13 +148,15 @@ def main():
                     current_level +=1
                     background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio) #ОТЛАДКА, потом удалить
                     
+                if event.key in ([pygame.K_SPACE], keys[pygame.K_UP], keys[pygame.K_w]):
+                    audio.play_player('player_jump')
 
             if event.type == pygame.KEYUP:
                 if event.key in (pygame.K_SPACE, pygame.K_UP, pygame.K_w):
                     player.jump_stop()
                 
 
-        if not current_level == 3:
+        if not current_level == 4:
         
             keys = pygame.key.get_pressed()
 
@@ -196,6 +214,8 @@ def main():
         
         if not player.alive:
             audio.stop_music()
+            audio.stop_enemy()
+            audio.play_player('player_dead')
             should_reset = dead_window.game_over(screen, screen_width, screen_height) #enter не всегда срабатывает с первого раза
 
             if should_reset:
@@ -209,14 +229,23 @@ def main():
             marker.update(screen, player, items, current_level)
             if marker.is_triggered:
                 if marker.type == 'NEXTLEVEL':
+                    if current_level == 2:
+                        print('level 2')
+                        trigger_next_level = level_update(current_level, camera, screen, markers, items)
+                        marker.is_triggered = False
+                        break
                     trigger_next_level = level_update(current_level, camera, screen, markers, items)
                     marker.is_triggered = False
 
                 if marker.type == 'TRIGGER_1':
 
+                    
+
                     if current_level == 1:
                         marker.alive = False
                         
+                        audio.play_enemy('vamp_trig')
+
                         audio.stop_music()
 
                         if enemy.detect_timer == None:
@@ -247,16 +276,22 @@ def main():
 
                     if current_level == 2: #маркер в начале уровня, спавнит волков слева и триггерит вампира справа
                         
+                        
 
                         if enemy.detect_timer == None:
                             enemy.detect_timer = time.time()
 
                         print('the enemy is processing...')
                         time_passed = time.time() - enemy.detect_timer
+
+                        if time_passed < 1:
+                            audio.play_enemy('vamp_trig')
                         if time_passed >= 3:
                             #print('start chasing')
                             enemy.state = 'CHASE'
                             enemy.can_chase = True
+
+                            audio.play_music('run')
                             
                             if marker.alive:
                                 marker.alive = False
@@ -295,12 +330,13 @@ def main():
                 if marker.type == 'TRIGGER_3': #затухание музыки, потому что погоня прекратилась (вампир задеспавнен)
                     #print('marker 3 triggered')
                     if current_level == 2:
+
                         audio.stop_music()
 
                         music_wait = time.time()
 
                         if music_wait - time.time() >= 3:
-                            audio.play_music('thinking')
+                            
 
                             enemy.destroy_enemy()
                             enemy.state = 'IDLE'
@@ -310,21 +346,26 @@ def main():
                             marker.alive = False
                             marker.is_triggered = False
 
-                        
+                            
+                            audio.play_music('thinking')
 
+                            break
 
-                        break
-
-                if marker.type == 'TRIGGER_4':
-
-                    if current_level == 2:  
+                if marker.type == 'TRIGGER_0':
+                    print('DO YOU WANNA HAVE A BAD TIMEEEE')
+                    if current_level == 2: #деспавнит первых трёх волков для экономии ресурсов, спавнит ещё пять на дне ямы 
                         marker.alive = False
-                        #print('trigger 4, level 2')
+
+                        audio.play_enemy('vamp_trig')
 
                         audio.stop_music()
 
-                        enemy.create_enemy(tile_size*217, tile_size*26, 'IDLE', player)
+                        print('trigger 4, level 2')
+                        enemy.destroy_enemy()
+                        enemy.create_enemy(tile_size*217, 256, 'IDLE', player)
                         enemy.can_chase = False
+                        print('enemy on ', enemy.rect.x, enemy.rect.y, enemy.alive)
+                        print('player on ', player.rect.x, player.rect.y)
 
                         if enemy.detect_timer == None:
                             enemy.detect_timer = time.time()
@@ -333,14 +374,15 @@ def main():
                             if item.type == 'LEVER_3':
                                 item.is_triggered = True
 
-                        #print('MARKER: the enemy is processing...')
+                        print('MARKER: the enemy is processing...')
                         time_passed = time.time() - enemy.detect_timer
                         if time_passed >= 2:
-                            #print('MARKER: start chasing')
-                            enemy.state = 'CHASE'
-                            enemy.can_chase = True
 
                             audio.play_music('run')
+
+                            print('MARKER: start chasing')
+                            enemy.state = 'CHASE'
+                            enemy.can_chase = True
 
                         marker.is_triggered = False
 
@@ -348,7 +390,7 @@ def main():
 
 
         for item in items:
-            item.update(screen, camera, player, items)
+            item.update(screen, camera, player, items, audio)
             if item.is_triggered:
                 #print('item triggered', current_level, item.type)
                 if item.type == 'BUSH_BLUE' and current_level == 0:
@@ -404,7 +446,7 @@ def main():
 
 
 
-        if current_level == 3: #финальная кацсцена
+        if current_level == 4: #финальная кацсцена
 
             for item in items:
                 if item.type == 'POLICE':
@@ -440,8 +482,11 @@ def main():
         if trigger_next_level:
             current_level += 1
             audio.stop_music()
+            audio.play_other('change_level')
             background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio)
             trigger_next_level = False
+
+            
         
 
 
@@ -451,11 +496,11 @@ def main():
         camera.update(player, screen)
 
         if enemy:
-            enemy.update(platforms, markers, camera, player)
+            enemy.update(platforms, markers, camera, player, audio)
 
         if len(mobs)>0:
             for mob in mobs:
-                mob.update(platforms, markers, camera, player, screen)
+                mob.update(platforms, markers, camera, player, audio, screen)
         
         """if trigger_next_level:
             camera.fade_in(screen, (0, 0, 0), background_color, platforms, items, player) убрала из-за багов"""

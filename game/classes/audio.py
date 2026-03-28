@@ -27,20 +27,32 @@ class Audio:
         if name in self.audio_map:
             sfx = self.audio_map[name]
             
-            if name == 'player_walk' and not self.walk_playing:
-                self.channel_player.play(sfx)
-                self.walk_playing = True
-            elif name == 'player_jump':
-                self.channel_player.play(sfx)
-                self.jump_playing = True
-            elif name == 'player_land':
-                self.channel_player.play(sfx)
-                self.land_playing = True
+            if not self.channel_player.get_busy():
+                if name == 'player_walk':
+                    self.channel_player.play(sfx)
+                    self.walk_playing = True
+
+            elif self.channel_player.get_sound() == self.audio_map['player_walk']:
+                #print('JOJFJPFJPFJDSP')
+                if name == 'player_jump':
+                    self.channel_player.play(sfx)
+                elif name == 'player_land':
+                    self.channel_player.play(sfx)
+
+                print('sound ', name)
 
     def play_enemy(self, name):
         if name in self.audio_map:
             sfx = self.audio_map[name]
-            self.channel_enemy.play(sfx)
+            if not self.channel_enemy.get_busy():
+                self.channel_enemy.play(sfx)
+
+            elif self.channel_enemy.get_sound() == self.audio_map['vamp_walk']:
+                if name == 'vamp_jump' or name == 'vamp_land':
+                    self.channel_enemy.play(sfx)
+
+            print('sound ', name)
+
 
     def play_other(self, name):
         if name in self.audio_map:
@@ -64,3 +76,6 @@ class Audio:
         if self.walk_playing:
             self.channel_player.stop()
             self.walk_playing = False
+
+    def music_fadeout(self):
+        self.channel_music.fadeout()

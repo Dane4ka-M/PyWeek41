@@ -7,6 +7,7 @@ import random
 import pygame.surface
 
 from animation_manager import set_animation
+from classes.audio import Audio
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, width, height, image, type):
@@ -96,12 +97,19 @@ class Enemy(pygame.sprite.Sprite):
             self.velocity_x = self.speed
             self.direction = 1
 
+    # метод движения по вертикали (для мыши)
+    def move_y(self, direction):
+        if direction == -1:
+            self.velocity_y = -self.speed
+        elif direction == 1:
+            self.velocity_y = self.speed
+
     def jump(self):
         if self.on_ground:
             self.velocity_y = self.jump_power
             self.on_ground = False
     
-    def update(self, platforms, markers, camera, player, screen=None):
+    def update(self, platforms, markers, camera, player, audio, screen=None):
 
         if not self.alive or not self.target.alive:
             return
@@ -123,6 +131,7 @@ class Enemy(pygame.sprite.Sprite):
 
         #проверка состояний для смены анимации
         if self.type == 'VAMPIRE':
+
             if self.on_ground:
             
                 if self.velocity_x != 0: #бег
@@ -133,6 +142,8 @@ class Enemy(pygame.sprite.Sprite):
                     elif self.direction == 0:
                         self.animation = set_animation('enemy_left_' + self.anim)
 
+                    audio.play_enemy('vamp_walk')
+
         
                 elif self.velocity_x == 0: #покой
                     if self.direction == 1:
@@ -141,6 +152,7 @@ class Enemy(pygame.sprite.Sprite):
                     else:
                         self.anim = 'idle'
                         self.animation = set_animation('enemy_left_idle')
+
 
                     self.frame = 0
                     self.wait_play = 0
@@ -153,8 +165,14 @@ class Enemy(pygame.sprite.Sprite):
                     self.anim = 'jump'
                     self.animation = set_animation('enemy_left_jump')
 
+                if self.velocity_y < 0:
+                    audio.play_enemy('vamp_jump')
+
                 self.frame = 0
                 self.wait_play = 0
+
+        if self.type == 'BAT':
+            self.animation = set_animation('bat')
 
         if self.type == 'WOLF':
             if self.on_ground:
@@ -210,14 +228,18 @@ class Enemy(pygame.sprite.Sprite):
                 self.wait_play += 1
 
 
-        # гравитация
-        if not self.on_ground or self.on_ground:
-            if self.velocity_y > self.max_fall_speed:
-                self.velocity_y = self.max_fall_speed
+        
+        if not self.type == 'BAT':
+
+            # гравитация
+            if not self.on_ground or self.on_ground:
+                if self.velocity_y > self.max_fall_speed:
+                    self.velocity_y = self.max_fall_speed
+                else:
+                    self.velocity_y += self.gravity
             else:
-                self.velocity_y += self.gravity
-        else:
-            self.velocity_y = 0
+                self.velocity_y = 0
+
 
         #обновление положения по горизонтали
         self.rect.x += self.velocity_x
@@ -304,9 +326,9 @@ class Enemy(pygame.sprite.Sprite):
 
         elif self.type == 'WOLF':
             if self.rect.x < self.target.rect.x:
-                self.move_x(1)
+                self.move_x(self.speed)
             elif self.rect.x > self.target.rect.x:
-                self.move_x(-1)
+                self.move_x(-self.speed)
             else:
                 self.velocity_x = 0
             
@@ -317,6 +339,28 @@ class Enemy(pygame.sprite.Sprite):
                 self.destroy_enemy()
 
             #print('wolf is on ', self.rect.x, self.rect.y, ' on ground ', self.on_ground, ' animation ', self.animation)
+
+        elif self.type == 'BAT':
+            self.state = 'CHASE'
+            self.speed = 2
+
+            if self.rect.x < self.target.rect.x:
+                self.move_x(self.speed)
+            elif self.rect.x > self.target.rect.x:
+                self.move_x(-self.speed)
+            else:
+                self.velocity_x = 0
+
+            if self.rect.y < self.target.rect.y:
+                self.move_y(self.speed)
+            elif self.rect.y > self.target.rect.y:
+                self.move_y(-self.speed)
+            else:
+                self.velocity_y = 0
+            
+            if abs(self.rect.x - self.target.rect.x) > camera.width * 3:
+                self.destroy_enemy()
+                self.create_enemy(self.target+16, self.target+96, self.state, self.target)
 
 
             
@@ -381,8 +425,8 @@ class Enemy(pygame.sprite.Sprite):
                         if self.cannot_reach_count == 1000:
                             return False
             except:
-                enemy.destroy_enemy()
-                enemy.create_enemy(self.rect.x-16, self.rect.y-16)
+                self.destroy_enemy()
+                self.create_enemy(self.rect.x-16, self.rect.y-16, 'IDLE', self.target)
 
 
     def start_chase(self):

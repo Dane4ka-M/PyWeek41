@@ -8,7 +8,7 @@ class DialogueWindow:
         self.padding = 2
 
         self.text = ''
-        self.font_size = 20
+        self.font_size = 16
         self.font_color = pygame.color.Color((0, 0, 0))
         self.font = pygame.font.Font('fonts/RetroSans.ttf', self.font_size)
 
