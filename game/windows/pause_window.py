@@ -48,7 +48,7 @@ def pause(screen, screen_width, screen_height):
                     if buttons[selected_button] == 'Continue':
                         cont = True 
                     elif buttons[selected_button] == 'Return to menu':
-                        return True #will stop running in the main 
+                        return 1 #will stop running in the main 
                     elif buttons[selected_button] == 'Quit the game':
                         result = game_quit(screen, screen_width, screen_height)
                         if result:  # Если пользователь выбрал "No, I will continue"

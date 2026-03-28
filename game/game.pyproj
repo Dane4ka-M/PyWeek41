@@ -23,6 +23,7 @@
   <ItemGroup>
     <Compile Include="animation_manager.py" />
     <Compile Include="classes\audio.py" />
+    <Compile Include="classes\background.py" />
     <Compile Include="classes\camera.py" />
     <Compile Include="classes\enemy.py" />
     <Compile Include="classes\items.py" />

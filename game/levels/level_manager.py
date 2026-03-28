@@ -42,6 +42,8 @@ def load_level(level_number, tile_size, camera, screen, audio):
     for row in range(len(level)):
         for col in range(len(level[row])):
             
+                    
+
             #загрузка платформ
             if level[row][col] in range(16) or level[row][col] in range(25, 32):
                 
@@ -115,6 +117,34 @@ def load_level(level_number, tile_size, camera, screen, audio):
                 mobs_spawn_xy.append([col*tile_size, row*tile_size])
                 mobs.append(Enemy(tile_size, tile_size, image, 'THORNS'))
                 #enemy_spawn_xy = [col*tile_size, row*tile_size]
+
+            if level[row][col] == 36: #шипы 1
+
+                try:
+                    image = pygame.image.load('images/tileset/_' + str(level[row][col]) + '.png')
+
+                except:
+                    print('failed to load textures on tile ', row, col, ' with index ', level[row][col], '. Filling with pink color instead')
+                    image = pygame.Surface((tile_size, tile_size))
+                    image.fill(placeholder_color)
+                
+                
+                mobs_spawn_xy.append([col*tile_size, row*tile_size])
+                mobs.append(Enemy(tile_size, tile_size, image, 'THORNS'))
+
+            if level[row][col] == 37: #шипы 2
+
+                try:
+                    image = pygame.image.load('images/tileset/_' + str(level[row][col]) + '.png')
+
+                except:
+                    print('failed to load textures on tile ', row, col, ' with index ', level[row][col], '. Filling with pink color instead')
+                    image = pygame.Surface((tile_size, tile_size*2))
+                    image.fill(placeholder_color)
+                
+                
+                mobs_spawn_xy.append([col*tile_size, (row-0.5)*tile_size])
+                mobs.append(Enemy(tile_size, tile_size*1.5, image, 'THORNS'))
             
             #загрузка маркеров
             if level[row][col] == 80: #триггер перехода на следующий уровень
@@ -179,10 +209,10 @@ def load_level(level_number, tile_size, camera, screen, audio):
                     image = pygame.image.load('images/tileset/_' + str(level[row][col]) + '.png')
                 except:
                     print('failed to load textures on tile ', row, col, ' with index ', level[row][col], '. Filling with pink color instead')
-                    image = pygame.Surface((tile_size*6, tile_size))
+                    image = pygame.Surface((tile_size*6, tile_size/2))
                     image.fill(placeholder_color)
                 
-                items.append(Item(col * tile_size, row * tile_size, tile_size*6, tile_size, image, 'BRIDGE_3', level_number, markers, can_interact=False, can_pass=False))
+                items.append(Item(col * tile_size, (row+0.5) * tile_size, tile_size*6, tile_size/2, image, 'BRIDGE_3', level_number, markers, can_interact=False, can_pass=False))
             if level[row][col] == 22: #block
 
                 try:
