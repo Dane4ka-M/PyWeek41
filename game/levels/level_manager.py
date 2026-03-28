@@ -1,6 +1,8 @@
 import pygame
 
 import numpy as np
+import time
+
 from classes.platforms import Platform
 from classes.player import Player
 from classes.enemy import Enemy
@@ -41,7 +43,7 @@ def load_level(level_number, tile_size, camera, screen, audio):
         for col in range(len(level[row])):
             
             #загрузка платформ
-            if level[row][col] in range(16) or level[row][col] == 31:
+            if level[row][col] in range(16) or level[row][col] in range(25, 32):
                 
                 try:
                     
@@ -118,7 +120,6 @@ def load_level(level_number, tile_size, camera, screen, audio):
             if level[row][col] == 80: #триггер перехода на следующий уровень
 
                 image = pygame.Surface((tile_size, tile_size*6)) #16x96
-                image.fill(placeholder_color)
                 
                 markers.append(Marker(col*tile_size, row*tile_size, tile_size, tile_size*6, image, 'NEXTLEVEL'))
 
@@ -126,30 +127,28 @@ def load_level(level_number, tile_size, camera, screen, audio):
             if level[row][col] == 81: #триггер действий 1
 
                 image = pygame.Surface((tile_size, tile_size*6)) #16x96
-                image.fill(placeholder_color)
                 
                 markers.append(Marker(col*tile_size, row*tile_size, tile_size, tile_size*6, image, 'TRIGGER_1'))
 
             if level[row][col] == 82: #триггер действий 2
 
                 image = pygame.Surface((tile_size, tile_size*6)) #16x96
-                image.fill(placeholder_color)
                 
                 markers.append(Marker(col*tile_size, row*tile_size, tile_size, tile_size*6, image, 'TRIGGER_2'))
 
             if level[row][col] == 83: #триггер действий 2
 
                 image = pygame.Surface((tile_size, tile_size*6)) #16x96
-                image.fill(placeholder_color)
                 
                 markers.append(Marker(col*tile_size, row*tile_size, tile_size, tile_size*6, image, 'TRIGGER_3'))
 
             if level[row][col] == 84: #триггер действий 2
 
                 image = pygame.Surface((tile_size, tile_size*6)) #16x96
-                image.fill(placeholder_color)
+                 
                 
-                markers.append(Marker(col*tile_size, row*tile_size, tile_size, tile_size*6, image, 'TRIGGER_4'))
+                markers.append(Marker(col*tile_size, row*tile_size, tile_size, tile_size*6, image, 'TRIGGER_0'))
+                print('trigger 4 created on ', col, row)
 
             
 
@@ -424,14 +423,21 @@ def load_level(level_number, tile_size, camera, screen, audio):
         audio.stop_music()
         audio.play_music('thinking')
 
-    if level_number == 1:
+    if level_number == 1 or level_number == 4:
         audio.stop_music()
         audio.play_music('what')
 
     if level_number == 2:
         audio.stop_music()
+
+    if level_number == 3:
+        audio.stop_music()
         audio.play_music('run')
 
+    if level_number == 3:
+        enemy.type = 'BAT'
+
+    
 
     #camera.fade_in(screen, (0, 0, 0), set_background(level_number), platforms, items, player) убрала из-за багов
     return platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level
@@ -459,13 +465,14 @@ def level_update(number, camera, screen, markers, items): ######## СЮДА ДО
         camera.fade_out(screen, (0, 0, 0))
         return trigger_next_level
 
-    elif number == 1:
+    elif number in (1, 2, 3):
         for marker in markers:
             if marker.type == 'NEXTLEVEL':
                 if marker.is_triggered:
                     trigger_next_level = True
                     camera.fade_out(screen, (0, 0, 0))
                     return trigger_next_level
+
 
 def count_berries():
     global berries_count

@@ -57,7 +57,7 @@ def show(screen, screen_width, screen_height, audio):
         
         window_surface.fill(window_color)
         
-        header_surf = header_font.render('RANDOM GAME', True, header_color)
+        header_surf = header_font.render('RUN', True, header_color)
         header_rect = header_surf.get_rect(center=(window_rect.width // 2, window_rect.height // 8))
         window_surface.blit(header_surf, header_rect)
         

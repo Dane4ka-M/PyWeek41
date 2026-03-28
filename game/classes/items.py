@@ -31,7 +31,7 @@ class Item(pygame.sprite.Sprite):
 
         self.is_triggered = False
 
-    def update(self, screen, camera, player, items):
+    def update(self, screen, camera, player, items, audio):
 
         if not self.alive:
             return
@@ -55,24 +55,31 @@ class Item(pygame.sprite.Sprite):
             if self.can_interact:
                 if self.type == 'FOREST':
                     
-                    dw_surf, dw_rect = dialogue_window.show(screen, camera, self, 'Press ENTER')
+                    dw_surf, dw_rect = dialogue_window.show(screen, camera, player, 'I shouldn’t walk in the forest — it’s too easy to get lost there')
                     dw_rect_transformed,  dw_surf_transformed = camera.apply(dw_rect, dw_surf)
+                    dw_surf_transformed = pygame.transform.scale(dw_surf, (dw_rect_transformed.width / 2, dw_rect_transformed.height / 2))
+                    dw_rect_transformed.x = dw_rect_transformed.x + 64
                     screen.blit(dw_surf_transformed, dw_rect_transformed)
 
-                    for event in pygame.event.get():
+                    """for event in pygame.event.get():
                         if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
 
                             dw_surf, dw_rect = dialogue_window.show(screen, camera, player, 'I shouldn’t walk in the forest — it’s too easy to get lost there.')
                             dw_rect_transformed,  dw_surf_transformed = camera.apply(dw_rect, dw_surf)
-                            screen.blit(dw_surf_transformed, dw_rect_transformed)
+                            screen.blit(dw_surf_transformed, dw_rect_transformed)"""
 
                 if self.type == 'BUSH_RED': 
-                    dw_surf, dw_rect = dialogue_window.show(screen, camera, self, 'Press ENTER')  #ДИАЛОГОВЫЕ ОКНА СТАЛИ ОГРОМНЫМИ ПОКА ПЫТАЛАСЬ ПОФИКСИТЬ ЗУМ КАМЕРЫ
+                    dw_surf, dw_rect = dialogue_window.show(screen, camera, self, 'Press ENTER to collect berries')  #ДИАЛОГОВЫЕ ОКНА СТАЛИ ОГРОМНЫМИ ПОКА ПЫТАЛАСЬ ПОФИКСИТЬ ЗУМ КАМЕРЫ
                     dw_rect_transformed,  dw_surf_transformed = camera.apply(dw_rect, dw_surf)
+                    dw_surf_transformed = pygame.transform.scale(dw_surf, (dw_rect_transformed.width / 2, dw_rect_transformed.height / 2))
+                    dw_rect_transformed.x = dw_rect_transformed.x + 64
                     screen.blit(dw_surf_transformed, dw_rect_transformed)
 
                     for event in pygame.event.get():
                         if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+
+                            audio.play_other('player_collect')
+
                             self.image = pygame.image.load('images/tileset/_50.png')
                             self.type = 'BUSH'
                             self.can_interact = False
@@ -81,12 +88,17 @@ class Item(pygame.sprite.Sprite):
                             """
 
                 if self.type == 'BUSH_BLUE': 
-                    dw_surf, dw_rect = dialogue_window.show(screen, camera, self, 'Press ENTER')  #ДИАЛОГОВЫЕ ОКНА СТАЛИ ОГРОМНЫМИ ПОКА ПЫТАЛАСЬ ПОФИКСИТЬ ЗУМ КАМЕРЫ
+                    dw_surf, dw_rect = dialogue_window.show(screen, camera, self, 'Press ENTER to collect berries')  #ДИАЛОГОВЫЕ ОКНА СТАЛИ ОГРОМНЫМИ ПОКА ПЫТАЛАСЬ ПОФИКСИТЬ ЗУМ КАМЕРЫ
                     dw_rect_transformed,  dw_surf_transformed = camera.apply(dw_rect, dw_surf)
+                    dw_surf_transformed = pygame.transform.scale(dw_surf, (dw_rect_transformed.width / 2, dw_rect_transformed.height / 2))
+                    dw_rect_transformed.x = dw_rect_transformed.x + 64
                     screen.blit(dw_surf_transformed, dw_rect_transformed)
 
                     for event in pygame.event.get():
                         if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+
+                            audio.play_other('player_collect')
+
                             self.is_triggered = True
                             self.image = pygame.image.load('images/tileset/_50.png')
                             #self.type = 'BUSH'
