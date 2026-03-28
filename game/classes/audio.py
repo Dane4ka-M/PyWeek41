@@ -57,7 +57,8 @@ class Audio:
     def play_other(self, name):
         if name in self.audio_map:
             sfx = self.audio_map[name]
-            self.channel_other.play(sfx)
+            if not self.channel_other.get_busy():
+                self.channel_other.play(sfx)
 
     def stop_music(self):
         self.channel_music.stop()
@@ -77,5 +78,5 @@ class Audio:
             self.channel_player.stop()
             self.walk_playing = False
 
-    def music_fadeout(self):
-        self.channel_music.fadeout()
+    def fadeout_music(self):
+        self.channel_music.fadeout(3000)

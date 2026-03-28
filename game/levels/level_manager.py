@@ -413,10 +413,10 @@ def load_level(level_number, tile_size, camera, screen, audio):
                 
                 except:
                     print('failed to load textures on tile ', row, col, ' with index ', level[row][col], '. Filling with pink color instead')
-                    image = pygame.Surface((tile_size, tile_size))
+                    image = pygame.Surface((tile_size*6, tile_size*5))
                     image.fill(placeholder_color)
                 
-                items.append(Item(col*tile_size, row*tile_size, tile_size, tile_size, image, 'POLICE', level_number, markers, can_interact=False))
+                items.append(Item(col*tile_size, (row-4)*tile_size, tile_size*6, tile_size*5, image, 'POLICE', level_number, markers, can_interact=False))
 
             
     if level_number == 0:

@@ -47,7 +47,9 @@ class Player(pygame.sprite.Sprite):
         self.play_speed = 5 #каждые n кадров меняется фрейм анимации
         self.wait_play = 0
 
-        
+        self.cut_scene = False
+        self.cut_scene_finish = False
+
         self.was_on_ground = False
 
         self.direction = 1
@@ -59,7 +61,14 @@ class Player(pygame.sprite.Sprite):
         
         #проверка состояний для смены анимации
         
-        if self.on_ground:
+        if self.cut_scene:
+            self.play_speed = 20
+            self.animation = set_animation('player_transform')
+
+        elif self.cut_scene_finish:
+            self.animation = set_animation('player_transformed')
+
+        elif self.on_ground:
 
             if self.velocity_x != 0: #бег
                 self.anim = 'run'

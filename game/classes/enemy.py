@@ -42,6 +42,7 @@ class Enemy(pygame.sprite.Sprite):
         self.target = None
         self.state = 'IDLE'
 
+        self.cut_scene = False
         self.can_chase = False
         self.detect_timer = None
         self.detect_delay = 1 #как долго в секундах, прежде чем начнёт погоню после появления в пределах камеры
@@ -132,7 +133,12 @@ class Enemy(pygame.sprite.Sprite):
         #проверка состояний для смены анимации
         if self.type == 'VAMPIRE':
 
-            if self.on_ground:
+            if self.cut_scene:
+                self.anim = 'fly'
+                self.anumation = set_animation('enemy_right_' + self.anim)
+
+            elif self.on_ground:
+
             
                 if self.velocity_x != 0: #бег
                     self.anim = 'run'
@@ -152,6 +158,8 @@ class Enemy(pygame.sprite.Sprite):
                     else:
                         self.anim = 'idle'
                         self.animation = set_animation('enemy_left_idle')
+                    
+                    audio.stop_enemy()
 
 
                     self.frame = 0

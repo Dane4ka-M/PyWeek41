@@ -9,6 +9,8 @@ animations = {
     'player_left_run' : ['player_left_9.png', 'player_left_10.png'],
     'player_right_jump' : ['player_3.png'],
     'player_left_jump' : ['player_left_11.png'],
+    'player_transform' : ['player_transform_0.png', 'player_transform_1.png', 'player_transform_2.png', 'player_transform_3.png', 'player_transform_4.png', 'player_transform_5.png', 'player_transform_6.png', 'player_transform_7.png'],
+    'player_transformed' : ['player_transform_7.png'],
     'player_basket_right_idle' : [],
     'player_basket_left_idle' : [],
     'player_basket_right_run' : [],
