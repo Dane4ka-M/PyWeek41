@@ -12,7 +12,7 @@ from windows import menu_window
 from windows.quit_window import game_quit
 from windows.pause_window import pause
 from levels.level_manager import load_level, set_background, level_update
-from classes.player import Player
+from classes.player import Player, set_animation
 from classes.camera import Camera
 from classes.enemy import Enemy
 from classes.markers import Marker
@@ -123,6 +123,10 @@ def main():
     #camera.set_bounds(level_width, level_height)
     #enemy.create_enemy(enemy_spawn_xy[0], enemy_spawn_xy[1], 'CHASE', player, level) #заспавнить врага и назначить следить за игроком
 
+    final_started = True
+    frame = 0
+    wait_play = 0
+
     background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio)
 
     running = True
@@ -165,11 +169,9 @@ def main():
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:
                 player.velocity_x = -player.speed
                 player.direction = 0
-                #player.animation_player(0, 'run')
             if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                 player.velocity_x = player.speed
                 player.direction = 1
-                #player.animation_player(1, 'run')
 
             if jump_pressed:
                 player.jump(audio)
@@ -447,33 +449,112 @@ def main():
 
 
         if current_level == 4: #финальная кацсцена
+            print('final')
+
+            
 
             for item in items:
                 if item.type == 'POLICE':
                     camera.target = item
                     print('camera target set to police')
+                    camera.camera.y = camera.camera.y - 16
 
             enemy.state = 'IDLE'
             enemy.can_chase = False
             
-            scene_start = time.time()
-            print('start time ', scene_start)
+            
+            if final_started:
+                scene_start = time.time()
+                final_started = False
 
+            print('difference ', time.time() - scene_start)
             if time.time() - scene_start >= 1:
-                print('1 second passed')
                 player.speed = 2
+                player.play_speed = 10
                 player.velocity_x = player.speed
                 player.direction = 1
-                print('player velocity ', player.velocity_x)
+
+            if time.time() - scene_start >= 3:
+                player.velocity_x = 0
 
             if time.time() - scene_start >= 4:
-                print('4 seconds passed')
+
+                audio.fadeout_music()
+                audio.play_other('vamp_trig') #заменить на стук
+
+            
+            if time.time() -scene_start >= 7:
+                audio.stop_other()
+
+                enemy.speed = 2
+                enemy.play_speed = 8
+                enemy.velocity_x = enemy.speed
+                enemy.direction = 1
+
+
+            if time.time() - scene_start >= 9:
+                enemy.velocity_x = 0
+
+            if time.time() - scene_start >= 10:
+                enemy.velocity_x = 1
+
+            if time.time() - scene_start >= 11:
+                enemy.velocity_x = 0
+
+            if time.time() - scene_start >= 12:
+                enemy.velocity_x = 0.8
+
+            if time.time() - scene_start >= 13:
+                enemy.velocity_x = 0
+
+            if time.time() - scene_start >= 13.5:
+                player.direction = 0
+
+            if time.time() - scene_start >= 14.5:
+                player.direction = 0
+                player.velocity_x = 0.5 
+                player.play_speed = 20
+
+            if time.time() - scene_start >= 15:
                 player.velocity_x = 0
-                print('player velocity ', player.velocity_x)
 
-                #play knocks or something
+            if time.time() - scene_start >= 16:
+                player.direction = 1
+                player.velocity_x = 3
+                player.play_speed = 20
+                enemy.cut_scene = True #маркер для включения анимации полёта
+                enemy.velocity_x = 7
 
+            if time.time() - scene_start >= 16.5:
+                audio.stop_player()
+                enemy.velocity_x = 0
+                enemy.animation = set_animation('enemy_right_fly')
+                player.velocity_x = 0
+                audio.play_player('player_dead')
+
+            if time.time() - scene_start >= 17:
+                audio.stop_player()
+                player.cut_scene = True
+
+            if time.time() - scene_start >= 19.8:
+                player.cut_scene = False
+                player.frame = 0
+                player.wait_play = 0
+                player.cut_scene_finish = True
+
+            if time.time() - scene_start >= 20:
+                audio.play_player('vamp_trig')
+                while True:
+                    screen.fill((0, 0, 0))
+                    pygame.display.flip()
+
+                    if time.time() - scene_start >= 23:
+                        to_menu = True
+                        running = False
+                        break
+                    
                 
+
             
 
 
