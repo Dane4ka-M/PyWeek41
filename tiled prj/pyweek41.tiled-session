@@ -13,8 +13,8 @@
             "scale": 0.75,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 800.6666666666666,
-                "y": 196.66666666666669
+                "x": 291.33333333333337,
+                "y": 679.3333333333333
             }
         },
         "1.tmx": {
@@ -34,11 +34,11 @@
             }
         },
         "3.tmx": {
-            "scale": 0.5,
+            "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 801,
-                "y": 239
+                "x": 1007.25,
+                "y": 404.75
             }
         },
         "4.tmx": {
@@ -50,11 +50,11 @@
             }
         },
         "5.tmx": {
-            "scale": 0.75,
+            "scale": 0.25,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 540.6666666666665,
-                "y": 2654
+                "x": 942,
+                "y": 1334
             }
         },
         "6.tmx": {
@@ -90,7 +90,7 @@
     "last.exportedFilePath": "D:/Game Projects/pygame_projects/gamejams/game/levels",
     "last.externalTilesetPath": "C:/Users/Zmiev/Downloads/tiled prj",
     "last.imagePath": "D:/Game Projects/pygame_projects/pyweek 41/tiled prj",
-    "map.height": 200,
+    "map.height": 180,
     "map.lastUsedExportFilter": "CSV files (*.csv)",
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,

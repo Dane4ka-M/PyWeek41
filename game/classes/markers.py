@@ -9,15 +9,15 @@ class Marker(pygame.sprite.Sprite):
 
         self.width, self.height = width, height
 
-        self.image_surface = pygame.Surface((width, height))
+        self.image_surface = pygame.Surface((width, height), pygame.SRCALPHA)
 
-        self.image = image
+        self.image = self.image_surface
 
         self.rect = self.image_surface.get_rect()
         self.rect.x = x
         self.rect.y = y
 
-        self.image_surface.set_alpha(0)
+        self.image_surface.set_alpha(255)
 
         self.type = type
 
@@ -27,7 +27,7 @@ class Marker(pygame.sprite.Sprite):
 
     def update(self, screen, player, items, level):
         
-        self.image_surface.set_alpha(0)
+        self.image_surface.set_alpha(255)
 
         if not self.alive:
             return

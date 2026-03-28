@@ -123,9 +123,6 @@ class Enemy(pygame.sprite.Sprite):
             self.animation = []
             self.anim = None
             
-            self.image = pygame.image.load('images/tileset/_35.png')
-            rect_transformed, image_transformed = camera.apply(self)
-            screen.blit(image_transformed, rect_transformed)
             
             return
 
@@ -352,26 +349,26 @@ class Enemy(pygame.sprite.Sprite):
             self.state = 'CHASE'
             self.speed = 2
 
+            # по горизонтали
             if self.rect.x < self.target.rect.x:
-                self.move_x(self.speed)
+                self.move_x(1)  
             elif self.rect.x > self.target.rect.x:
-                self.move_x(-self.speed)
+                self.move_x(-1)
             else:
                 self.velocity_x = 0
 
+            # по вертикали
             if self.rect.y < self.target.rect.y:
-                self.move_y(self.speed)
+                self.move_y(1)
             elif self.rect.y > self.target.rect.y:
-                self.move_y(-self.speed)
+                self.move_y(-1)
             else:
                 self.velocity_y = 0
-            
+    
             if abs(self.rect.x - self.target.rect.x) > camera.width * 3:
                 self.destroy_enemy()
-                self.create_enemy(self.target+16, self.target+96, self.state, self.target)
+                self.create_enemy(self.target.rect.x + 16, self.target.rect.y + 96, self.state, self.target)
 
-
-            
 
 
     def find_place_to_create(self, camera, platforms):

@@ -14,7 +14,7 @@ def show(screen, screen_width, screen_height, audio):
     active_color = pygame.color.Color((70, 172, 43))
     
     selected_button = 0
-    buttons = ['To the forest', 'Reset save', 'Quit the game']
+    buttons = ['To the forest', 'Reset progress', 'Quit the game']
     
     window_surface = pygame.Surface((screen_width // 3, screen_height))
     window_rect = window_surface.get_rect(topleft=(0, 0))
@@ -47,9 +47,10 @@ def show(screen, screen_width, screen_height, audio):
                     selected_button = (selected_button - 1) % len(buttons)
                 elif event.key == pygame.K_RETURN:
                     if buttons[selected_button] == 'To the forest': # Баг: если вернуться из игры в меню, то переход в игру требует выбрать кнопку дважды
-                        return True
-                    elif buttons[selected_button] == 'Reset save':
+                        return 1
+                    elif buttons[selected_button] == 'Reset progress':
                         print('tried to reset save. But nothing happened. Seems like save system is not present yet.')
+                        return 2
                     elif buttons[selected_button] == 'Quit the game':
                         finish_process()
         

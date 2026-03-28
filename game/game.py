@@ -3,6 +3,8 @@ import pygame
 import sys
 import time
 
+from pygame import display
+
 pygame.init()
 
 pygame.mixer.init()
@@ -17,6 +19,7 @@ from classes.camera import Camera
 from classes.enemy import Enemy
 from classes.markers import Marker
 from classes.audio import Audio
+from classes.background import Background
 
 
 running = False
@@ -30,6 +33,10 @@ trigger_next_level = False
 screen_width, screen_height = 1024, 576
 #screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
 screen = pygame.display.set_mode((screen_width, screen_height))
+
+icon = pygame.image.load('icon.png')
+display.set_icon(icon)
+display.set_caption('Run to the forest')
 
 
 # библиотека звуков 
@@ -58,6 +65,8 @@ audio.load_audio('thinking', 'sounds/BG_Melody_ThinkingDynamic.wav') #Музык
 audio.load_audio('what', 'sounds/BG_Melody_WhatDynamic.wav') #Музыка 1 уровень до встречи с вампиром+
 audio.load_audio('run', 'sounds/BG_Melody_MoreDynamic.wav') #Музыка побега+
 
+audio.load_audio('knock', 'sounds/knockknock.wav') #Стуки в полицейсккий участок+
+
 def change_level(number, screen, camera, audio):
 
     """
@@ -68,8 +77,23 @@ def change_level(number, screen, camera, audio):
 
     background_color = set_background(number) #пока цвет, потом заменить на картинку
     
+
     platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = load_level(number, tile_size, camera, screen, audio) 
     
+    if number == 1:
+        background_image = pygame.image.load('images/backgrounds/background_evening.png')
+
+    elif number == 2:
+        background_image = pygame.image.load('images/backgrounds/background_night.png')
+
+    else:
+        background_image = pygame.Surface((128, 128))
+        background_image.fill(background_color)
+
+    background_image = pygame.transform.scale(background_image, (level_width, level_height))
+
+    background = Background(0, 0, level_width, level_height, background_image)
+
 
     if enemy:
         enemy.create_enemy(enemy_spawn_xy[0], enemy_spawn_xy[1], 'IDLE', player, level) #заспавнить врага
@@ -86,13 +110,14 @@ def change_level(number, screen, camera, audio):
 
     screen.fill(background_color)
 
+
     camera.set_bounds(screen, level_width, level_height)
 
     player.set_jump_length(current_level)
 
 
 
-    return background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level
+    return background_color, background, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level
 
 
 
@@ -103,6 +128,7 @@ def main():
     global runnning
     global screen
     global screen_width, screen_height
+    global background
 
     fps = 60
     clock = pygame.time.Clock()
@@ -127,7 +153,7 @@ def main():
     frame = 0
     wait_play = 0
 
-    background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio)
+    background_color, background, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio)
 
     running = True
 
@@ -143,14 +169,16 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     to_menu = pause(screen, screen_width, screen_height)
-                    if to_menu == True:
+                    if to_menu == 1:
                         #print('to menu is ', to_menu)
-                        to_menu = False
                         running = False
+                    elif to_menu == 2:
+                        background_color, background, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio) #ОТЛАДКА, потом удалить
+                    
 
                 if event.key == pygame.K_TAB:
                     current_level +=1
-                    background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio) #ОТЛАДКА, потом удалить
+                    background_color, background, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio) #ОТЛАДКА, потом удалить
                     
                 if event.key in ([pygame.K_SPACE], keys[pygame.K_UP], keys[pygame.K_w]):
                     audio.play_player('player_jump')
@@ -183,9 +211,13 @@ def main():
 
         #---ОТРИСОВКА---
 
+
         if player.alive:
 
             screen.fill(background_color)
+
+            background.draw(screen, camera) 
+
 
             for platform in platforms:
 
@@ -221,7 +253,7 @@ def main():
             should_reset = dead_window.game_over(screen, screen_width, screen_height) #enter не всегда срабатывает с первого раза
 
             if should_reset:
-                background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio)
+                background_color, background, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio)
 
 
         #---ОБНОВЛЕНИЕ ИГРЫ---
@@ -407,9 +439,9 @@ def main():
                         for target in items:
                             if target.type == 'BRIDGE_1':
                                 #print('found bridge 1')
-                                target.y = target.y + tile_size*5
+                                target.y = (target.y + tile_size*5) + 8
                                 target.width = tile_size*6
-                                target.height = tile_size
+                                target.height = tile_size/2
                                 target.image_surface = pygame.Surface((target.width, target.height))
                                 target.image = pygame.image.load('images/tileset/_17.png')
                                 target.rect = pygame.Rect(target.x, target.y, target.width, target.height)
@@ -421,9 +453,9 @@ def main():
                         for target in items:
                             if target.type == 'BRIDGE_2':
                                 #print('found bridge 2')
-                                target.y = target.y + tile_size*5
+                                target.y = (target.y + tile_size*5) + 8
                                 target.width = tile_size*6
-                                target.height = tile_size
+                                target.height = tile_size/2
                                 target.image_surface = pygame.Surface((target.width, target.height))
                                 target.image = pygame.image.load('images/tileset/_19.png')
                                 target.rect = pygame.Rect(target.x, target.y, target.width, target.height)
@@ -480,7 +512,7 @@ def main():
             if time.time() - scene_start >= 4:
 
                 audio.fadeout_music()
-                audio.play_other('vamp_trig') #заменить на стук
+                audio.play_other('knock') 
 
             
             if time.time() -scene_start >= 7:
@@ -564,7 +596,7 @@ def main():
             current_level += 1
             audio.stop_music()
             audio.play_other('change_level')
-            background_color, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio)
+            background_color, background, platforms, markers, items, level_width, level_height, player, enemy, mobs, enemy_spawn_xy, mobs_spawn_xy, level = change_level(current_level, screen, camera, audio)
             trigger_next_level = False
 
             
@@ -600,8 +632,14 @@ def main():
 
 while True:
     game_start = menu_window.show(screen, screen_width, screen_height, audio)
-    if game_start == True:
-        game_start = False
+    if game_start == 1:
+        game_start = 0
+        running = True
+        audio.stop_music()
+        main()
+    elif game_start == 2:
+        current_level = 0
+        game_start = 0
         running = True
         audio.stop_music()
         main()
